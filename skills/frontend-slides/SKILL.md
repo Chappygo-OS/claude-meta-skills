@@ -70,3 +70,8 @@ font [name], logo at [position]. Save it so I never have to specify again.
 
 - Output is a single `.html` file — share it directly, embed in a website, or open in a browser for presenting.
 - For YouTube content, combine with a screen recorder to capture slide animations as video B-roll.
+
+## References
+
+Load on demand when no brand guide is available and a preset is needed:
+- `references/presets.md` — 12 named design presets (Bold Signal, Electric Studio, Creative Voltage, Dark Botanical, Notebook Tabs, Pastel Geometry, Split Pastel, Vintage Editorial, Neon Cyber, Terminal Green, Swiss Modern, Paper & Ink) with type pairings, palette mood, and a mood-to-preset map

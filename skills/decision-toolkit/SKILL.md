@@ -69,3 +69,9 @@ When this skill is invoked:
 
 - Most useful for decisions with significant downside risk, multiple stakeholders, or where you're emotionally attached to one option.
 - Pair with a second brain setup: the more context Claude has about your business, the more targeted the questions become.
+
+## References
+
+Load on demand when bias-checking or applying a specific framework:
+- `references/biases.md` — 10 core biases (FOMO, Sunk Cost, Authority, Social Proof, Commitment-Consistency, Optimism, Recency, Confirmation, Shiny Object, Loss Aversion) and 10 secondary, each with counter-questions
+- `references/frameworks.md` — 7 decision frameworks (First Principles, Opportunity Cost, Scenario Matrix, Pre-Mortem, 10-10-10, Regret Minimization, Weighted Decision Matrix) with templates and examples
