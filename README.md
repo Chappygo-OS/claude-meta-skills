@@ -26,13 +26,13 @@ Not workflow tools. These are **meta-skills** — they upgrade Claude across any
 ### One command (installs all 8)
 
 ```bash
-curl -s https://raw.githubusercontent.com/pablo-nastar/claude-meta-skills/main/install.sh | bash
+curl -s https://raw.githubusercontent.com/Chappygo-OS/claude-meta-skills/main/install.sh | bash
 ```
 
 ### Manual (pick what you need)
 
 ```bash
-git clone https://github.com/pablo-nastar/claude-meta-skills.git
+git clone https://github.com/Chappygo-OS/claude-meta-skills.git
 cp -r claude-meta-skills/skills/humanizer ~/.claude/skills/
 cp -r claude-meta-skills/skills/fact-checker ~/.claude/skills/
 # repeat for any skill you want
