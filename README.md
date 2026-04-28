@@ -10,43 +10,20 @@ Not workflow tools. These are **meta-skills** — they upgrade Claude across any
 
 | Skill | What it does |
 |-------|-------------|
-| `/process-interviewer` | Interviews you before building a skill — avoids bad specs and endless optimization loops |
-| `/prompt-master` | Converts brain dumps into structured, optimized prompts |
-| `/humanizer` | Removes AI writing markers from any text before it reaches a human reader |
-| `/fact-checker` | Verifies every factual claim against external sources |
-| `/find-skills` | Searches 90,000+ community skills before you build from scratch |
-| `/frontend-slides` | Builds animated HTML presentations with your brand guide |
-| `/decision-toolkit` | First-principles framework for big decisions — guides without deciding |
-| `/mcp-builder` | Builds an MCP server for any software with an API |
+| `/process-interviewer` | Interviews you before building a skill — produces a full PRD before any implementation |
+| `/prompt-master` | Converts brain dumps into structured, optimized prompts — with model routing and chain patterns |
+| `/humanizer` | Removes AI writing markers from any text — based on a full severity taxonomy |
+| `/fact-checker` | Verifies every factual claim against primary sources — with domain-specific guides |
+| `/find-skills` | Searches 90,000+ community skills before you build from scratch — with quality gates |
+| `/frontend-slides` | Builds animated HTML presentations with 5 style presets and full CSS animation library |
+| `/decision-toolkit` | First-principles framework for big decisions — 9 lenses, HTML wizard, scenario templates |
+| `/mcp-builder` | Builds an MCP server for any API — with TypeScript + Python templates and auth patterns |
+
+Each skill ships with a `references/` folder — support files Claude uses during execution (frameworks, templates, examples, code snippets).
 
 ---
 
 ## Install
-
-### Claude.ai (web app)
-
-Skills load from your account — no terminal needed.
-
-1. Download the `.zip` for each skill you want from the [`dist/`](./dist) folder
-2. Go to **Settings → Capabilities → Skills → Upload skill**
-3. Upload each `.zip` one by one and toggle it on
-
-Once active, Claude applies them automatically when it detects the skill matches what you're asking. No slash commands — it just works.
-
-**Download individual skills:**
-
-| Skill | Download |
-|-------|----------|
-| humanizer | [humanizer.zip](./dist/humanizer.zip) |
-| fact-checker | [fact-checker.zip](./dist/fact-checker.zip) |
-| prompt-master | [prompt-master.zip](./dist/prompt-master.zip) |
-| decision-toolkit | [decision-toolkit.zip](./dist/decision-toolkit.zip) |
-| frontend-slides | [frontend-slides.zip](./dist/frontend-slides.zip) |
-| process-interviewer | [process-interviewer.zip](./dist/process-interviewer.zip) |
-| find-skills | [find-skills.zip](./dist/find-skills.zip) |
-| mcp-builder | [mcp-builder.zip](./dist/mcp-builder.zip) |
-
----
 
 ### Claude Code (desktop app / CLI)
 
@@ -65,34 +42,35 @@ Restart Claude Code and invoke with `/skill-name`.
 ```bash
 git clone https://github.com/Chappygo-OS/claude-meta-skills.git
 cp -r claude-meta-skills/skills/humanizer ~/.claude/skills/
-# repeat for any skill you want
+# repeat for each skill you want
 ```
 
 > **Windows**: copy to `%USERPROFILE%\.claude\skills\`
 
+The `references/` subdirectory inside each skill folder is part of the skill — copy it along with `SKILL.md`.
+
 ---
 
-## Claude.ai vs Claude Code — compatibility
+### Claude.ai (web app)
 
-The skills were built for Claude Code. They work in Claude.ai too, with some nuances.
+These skills were built for Claude Code. In Claude.ai, paste the contents of a skill's `SKILL.md` directly into your project instructions or system prompt.
 
-**Work great in Claude.ai**
+The `references/` files can also be attached as project knowledge — Claude will use them automatically when running the skill.
 
-| Skill | Notes |
-|-------|-------|
-| `humanizer` | Auto-activated when Claude detects AI-generated text |
-| `fact-checker` | Needs web search enabled to verify sources |
-| `prompt-master` | Useful when you paste long brain dumps |
-| `decision-toolkit` | Works as a strategic interviewer |
-| `frontend-slides` | Generates HTML artifacts directly |
+---
 
-**Work with limitations**
+## Compatibility
 
-| Skill | Limitation |
-|-------|------------|
-| `find-skills` | Searches skills.sh — requires web search enabled |
-| `mcp-builder` | Generates MCP code, but output is a downloadable file, not a direct install |
-| `process-interviewer` | Designed to guide skill creation in Claude Code — still useful as a structured interviewer |
+| Skill | Claude Code | Claude.ai | Notes |
+|-------|:-----------:|:---------:|-------|
+| `humanizer` | ✅ | ✅ | Works as-is in both |
+| `fact-checker` | ✅ | ✅ | Requires web search enabled |
+| `prompt-master` | ✅ | ✅ | Auto-mode works in Claude Code; manual in Claude.ai |
+| `decision-toolkit` | ✅ | ✅ | HTML wizard output renders in Claude.ai artifacts |
+| `frontend-slides` | ✅ | ✅ | HTML output renders as an artifact |
+| `find-skills` | ✅ | ⚠️ | Requires web search enabled |
+| `mcp-builder` | ✅ | ⚠️ | Generates MCP code, but installation requires Claude Code |
+| `process-interviewer` | ✅ | ✅ | Works as a structured interviewer in both |
 
 ---
 
@@ -100,51 +78,83 @@ The skills were built for Claude Code. They work in Claude.ai too, with some nua
 
 ### `/process-interviewer`
 
-Before building anything, Claude jumps to action too fast. This skill interviews you with 10–15 deep questions to reach shared understanding first. Output: a full skill PRD you hand back to Claude to build from.
+Before building anything, Claude jumps to action too fast. This skill conducts a structured deep interview — 10–15 questions, one at a time — to reach shared understanding before any implementation starts.
 
-Use it for: any skill or automation you're struggling to spec clearly.
+Output: a full skill PRD (name, description, trigger, inputs, step-by-step instructions, output format, edge cases) ready to hand back to Claude to build from.
+
+**Includes**: `references/interview-rules.md` (10 interview principles), `references/question-banks.md` (question sets for 7 process types: writing, research, communication, ops, data, automation, decision support).
 
 ---
 
 ### `/prompt-master`
 
-Takes any unstructured brain dump (especially voice-transcribed) and rewrites it as a clean, optimized prompt before Claude executes it. Best used in auto-mode — add one line to your Claude instructions and it runs automatically on every complex prompt.
+Takes any unstructured brain dump — especially voice-transcribed inputs — and restructures it as an optimized prompt before execution. Applies: goal, role, context, format, constraints, examples, chain-of-thought.
+
+Best used in auto-mode: add one line to your CLAUDE.md and it runs automatically on every complex prompt.
+
+**Includes**: `references/templates.md` (8 optimized prompt templates by task type), `references/tool-routes.md` (Haiku/Sonnet/Opus routing guide), `references/chain-patterns.md` (6 multi-step prompt chain patterns).
 
 ---
 
 ### `/humanizer`
 
-Detects and removes AI writing tells: "unlock", "game-changer", filler openers, symmetrical bullet lists, vague intensifiers. Based on documented AI writing patterns. Run it on anything AI-generated before it reaches a human. Embed it as the last step in any writing skill.
+Detects and removes AI writing markers based on a documented severity taxonomy: filler openers, hype words, vague intensifiers, structural tells, hedge phrases, transition padding, passive overuse, future-tense closes.
+
+Can extract a voice profile from sample text to preserve the author's natural style. Shows a diff of what changed and why.
+
+**Includes**: `references/patterns.md` (full marker taxonomy with severity levels), `references/examples.md` (4 before/after transformations), `references/voice-profiles.md` (how to extract and apply a voice profile).
 
 ---
 
 ### `/fact-checker`
 
-Extracts every verifiable claim in a text, searches for primary sources, and returns a structured report: ✅ true / ⚠️ mostly true / ❓ unverifiable / ❌ false. Use it on AI output, your own drafts, or anyone else's content. Especially useful for video scripts and LinkedIn posts.
+Extracts every verifiable claim — statistics, named facts, causal claims, technical assertions, quotes — and checks each against primary sources. Returns a structured report: ✅ true / ⚠️ mostly true / ❓ unverifiable / ❌ false / 🔄 outdated.
+
+Especially important for AI-generated content where hallucinated statistics, phantom studies, and fabricated quotes are common.
+
+**Includes**: `references/source-hierarchy.md` (4-tier source ranking guide), `references/anti-patterns.md` (9 AI hallucination patterns to watch for), `references/domain-guides.md` (verification guidance for AI/tech, business, science, legal, and history claims).
 
 ---
 
 ### `/find-skills`
 
-Before building a skill, check if it already exists. Searches skills.sh by task description, returns results ranked by install count, and can install the best match directly.
+Before building a skill from scratch, check if it already exists. Searches skills.sh (90,000+ community skills) by task description — multiple search strategies, results ranked by install count and recency.
+
+Applies quality gates before recommending: install count, last-updated date, description clarity, scope fit, author reputation. Bridges directly to `/process-interviewer` when no good match is found.
+
+**Includes**: `references/quality-gates.md` (5-dimension scoring rubric), `references/search-strategies.md` (search patterns by task category).
 
 ---
 
 ### `/frontend-slides`
 
-Builds animated HTML presentations from scratch or converts PPT files. Embed your brand guide once and every deck comes out in your colors, fonts, and layout — no design tool needed.
+Builds animated HTML presentations as a single self-contained file — no external dependencies. Works from scratch, from a topic, or by converting PPT/outline input. Applies your brand guide automatically.
+
+Supports: keyboard and click navigation, fullscreen, speaker notes toggle, CSS transitions, animated counters, staggered bullet reveals.
+
+**Includes**: `references/presets.md` (5 ready-to-use CSS style presets: minimal, neon-cyber, warm-editorial, corporate-blue, bold-impact), `references/layout-rules.md` (specs for 8 slide types), `references/animation-library.md` (CSS animation code snippets).
 
 ---
 
 ### `/decision-toolkit`
 
-For big decisions (pricing, hiring, product bets). Applies a first-principles framework: start-fresh test, stakeholder mapping, bias check, timing, opportunity cost, scenario analysis. Produces both a markdown report and an interactive HTML wizard. Guides — doesn't decide.
+For significant decisions — pricing, hiring, product bets, partnerships, pivots. Applies 9 framework lenses: start-fresh test, stakeholder mapping, bias audit, timing test, opportunity cost, pre-mortem, scenario analysis, regret minimization, second-order effects.
+
+Produces both a markdown report and an interactive HTML wizard. Guides — doesn't decide.
+
+**Includes**: `references/frameworks.md` (8 decision frameworks in depth: First Principles, Second-Order Thinking, Regret Minimization, Two-Way Door, Pre-mortem, WRAP, 10-10-10, Expected Value), `references/biases.md` (11 cognitive biases with detection questions and counters), `references/scenarios.md` (6 pre-built decision templates: pricing, hiring, build-vs-buy, feature prioritization, new market, fire-vs-coach).
 
 ---
 
 ### `/mcp-builder`
 
-If a software you use doesn't have a native Claude integration, this builds one from its API docs. Output: working MCP server file + config JSON + step-by-step install guide. Native Anthropic skill — included here because most people don't know it exists.
+If a tool you use doesn't have a native Claude integration, this builds one from its API docs. Output: working MCP server file + config JSON + complete install guide.
+
+Supports TypeScript (default) and Python. Handles all auth types. Can offer to add the config directly to `~/.claude/settings.json`.
+
+**Note**: native Anthropic skill available in Claude Code by default — included here because most people don't know it exists.
+
+**Includes**: `references/templates.md` (full TypeScript and Python boilerplates), `references/auth-patterns.md` (6 auth patterns: API key, Bearer, Basic, query string, OAuth client credentials, OAuth authorization code), `references/common-apis.md` (pre-researched integration notes for Notion, HubSpot, Stripe, Airtable, Slack, Google Sheets, Linear, GitHub, Resend).
 
 ---
 
