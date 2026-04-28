@@ -58,3 +58,9 @@ When this skill is invoked with a prompt:
 
 - Works best on prompts over 3 sentences or voice-transcribed inputs.
 - The auto-mode setup is the highest-leverage way to use this skill — set it once and forget it.
+
+## References
+
+Load on demand when the user names a specific framework or target tool:
+- `references/templates.md` — 12 prompt frameworks (RTF, CO-STAR, RISEN, CRISPE, Chain of Thought, Few-Shot, File-Scope, ReAct + Stop Conditions, Visual Descriptor, Reference Image Editing, ComfyUI, Prompt Decompiler) with skeletons and examples
+- `references/tool-routes.md` — 30+ AI tool routing profiles (reasoning models, coding agents, image/video gen, browser agents, automation) with the constraints and quirks specific to each

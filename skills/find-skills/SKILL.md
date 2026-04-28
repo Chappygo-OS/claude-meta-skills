@@ -49,3 +49,8 @@ When this skill is invoked:
 - Always run this before `/process-interviewer`. No point building what already exists.
 - Install count is a useful proxy for quality, but not perfect — check the skill description before recommending high-install skills that might be outdated.
 - skills.sh URL: https://www.skills.sh
+
+## References
+
+Load on demand when assessing a skill's trustworthiness:
+- `references/quality-gates.md` — install-count thresholds (≥1K green / 100–1K yellow / <100 suspicious), trusted-source list, and the fallback path when no good match is found

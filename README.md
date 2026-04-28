@@ -45,6 +45,11 @@ Once active, Claude applies them automatically when it detects the skill matches
 | process-interviewer | [process-interviewer.zip](./dist/process-interviewer.zip) |
 | find-skills | [find-skills.zip](./dist/find-skills.zip) |
 | mcp-builder | [mcp-builder.zip](./dist/mcp-builder.zip) |
+| audio-transcriber | [audio-transcriber.zip](./dist/audio-transcriber.zip) |
+| deep-research | [deep-research.zip](./dist/deep-research.zip) |
+| file-organizer | [file-organizer.zip](./dist/file-organizer.zip) |
+| agent-browser | [agent-browser.zip](./dist/agent-browser.zip) |
+| openrouter | [openrouter.zip](./dist/openrouter.zip) |
 
 ---
 
@@ -52,7 +57,7 @@ Once active, Claude applies them automatically when it detects the skill matches
 
 Skills are invoked with slash commands (`/humanizer`, `/fact-checker`, etc.).
 
-**One command — installs all 8:**
+**One command — installs all 13:**
 
 ```bash
 curl -s https://raw.githubusercontent.com/Chappygo-OS/claude-meta-skills/main/install.sh | bash
@@ -145,6 +150,30 @@ For big decisions (pricing, hiring, product bets). Applies a first-principles fr
 ### `/mcp-builder`
 
 If a software you use doesn't have a native Claude integration, this builds one from its API docs. Output: working MCP server file + config JSON + step-by-step install guide. Native Anthropic skill — included here because most people don't know it exists.
+
+---
+
+## Extras
+
+Five additional skills that extend the core 8. They're separated because most need extra setup (API keys or local installs).
+
+| Skill | What it does | Setup |
+|-------|--------------|-------|
+| `/audio-transcriber` | Transcribes audio to markdown with optional meeting minutes | `faster-whisper` + `ffmpeg` |
+| `/deep-research` | Token-efficient deep research via OpenAI's Deep Research API | `OPENAI_API_KEY` |
+| `/file-organizer` | Reversible directory cleanup — proposes before it moves, logs every move for undo | None |
+| `/agent-browser` | Browser automation via accessibility-tree refs (`@e1`, `@e2`, ...) instead of brittle CSS selectors | `agent-browser` CLI |
+| `/openrouter` | Universal LLM gateway — fall back across providers, route by cost | `OPENROUTER_API_KEY` |
+
+The `install.sh` one-liner installs all 13. For Claude.ai, the zips for these are also in [`dist/`](./dist).
+
+---
+
+## Recipes — chaining skills
+
+Some chains are worth more than the parts. The canonical one is `process-interviewer → prompt-master → agent-browser`: interview to extract a clean spec, compile it into a hardened prompt, execute against live web. Other useful chains (publish-ready content, meeting → decision, cost-optimized execution) are documented in [RECIPES.md](./RECIPES.md).
+
+Several skills also ship a `references/` subfolder with deeper material (full pattern catalogs, framework templates, bias dictionaries) that Claude can pull on demand without bloating the SKILL.md.
 
 ---
 

@@ -81,3 +81,9 @@ When this skill is invoked:
 
 - Most useful on content that will be read by many people: articles, LinkedIn posts, video scripts, onboarding docs.
 - For technical claims about fast-moving topics (AI tools, API specs), always verify — these change often and AI training data may be outdated.
+
+## References
+
+Load on demand when weighing source credibility or spotting manipulation:
+- `references/source-hierarchy.md` — 6-tier source quality hierarchy (peer-reviewed → official stats → fact-checked news → in-domain experts → general news → social media) with when each tier counts and when to be skeptical
+- `references/anti-patterns.md` — 4 categories of manipulation (statistical, context removal, false equivalences, logical fallacies) with how to spot each
