@@ -25,15 +25,32 @@ Not workflow tools. These are **meta-skills** — they upgrade Claude across any
 
 ### Claude.ai (web app)
 
-Open a new chat and tell Claude:
+Skills load from your account — no terminal needed.
 
-> Add these skills: https://github.com/Chappygo-OS/claude-meta-skills
+1. Download the `.zip` for each skill you want from the [`dist/`](./dist) folder
+2. Go to **Settings → Capabilities → Skills → Upload skill**
+3. Upload each `.zip` one by one and toggle it on
 
-Claude will package them. Then go to **Settings → Customize → Skills** and import the result.
+Once active, Claude applies them automatically when it detects the skill matches what you're asking. No slash commands — it just works.
+
+**Download individual skills:**
+
+| Skill | Download |
+|-------|----------|
+| humanizer | [humanizer.zip](./dist/humanizer.zip) |
+| fact-checker | [fact-checker.zip](./dist/fact-checker.zip) |
+| prompt-master | [prompt-master.zip](./dist/prompt-master.zip) |
+| decision-toolkit | [decision-toolkit.zip](./dist/decision-toolkit.zip) |
+| frontend-slides | [frontend-slides.zip](./dist/frontend-slides.zip) |
+| process-interviewer | [process-interviewer.zip](./dist/process-interviewer.zip) |
+| find-skills | [find-skills.zip](./dist/find-skills.zip) |
+| mcp-builder | [mcp-builder.zip](./dist/mcp-builder.zip) |
 
 ---
 
 ### Claude Code (desktop app / CLI)
+
+Skills are invoked with slash commands (`/humanizer`, `/fact-checker`, etc.).
 
 **One command — installs all 8:**
 
@@ -41,7 +58,7 @@ Claude will package them. Then go to **Settings → Customize → Skills** and i
 curl -s https://raw.githubusercontent.com/Chappygo-OS/claude-meta-skills/main/install.sh | bash
 ```
 
-Restart Claude Code. Invoke with `/humanizer`, `/fact-checker`, etc.
+Restart Claude Code and invoke with `/skill-name`.
 
 **Manual — pick what you need:**
 
@@ -52,6 +69,30 @@ cp -r claude-meta-skills/skills/humanizer ~/.claude/skills/
 ```
 
 > **Windows**: copy to `%USERPROFILE%\.claude\skills\`
+
+---
+
+## Claude.ai vs Claude Code — compatibility
+
+The skills were built for Claude Code. They work in Claude.ai too, with some nuances.
+
+**Work great in Claude.ai**
+
+| Skill | Notes |
+|-------|-------|
+| `humanizer` | Auto-activated when Claude detects AI-generated text |
+| `fact-checker` | Needs web search enabled to verify sources |
+| `prompt-master` | Useful when you paste long brain dumps |
+| `decision-toolkit` | Works as a strategic interviewer |
+| `frontend-slides` | Generates HTML artifacts directly |
+
+**Work with limitations**
+
+| Skill | Limitation |
+|-------|------------|
+| `find-skills` | Searches skills.sh — requires web search enabled |
+| `mcp-builder` | Generates MCP code, but output is a downloadable file, not a direct install |
+| `process-interviewer` | Designed to guide skill creation in Claude Code — still useful as a structured interviewer |
 
 ---
 
