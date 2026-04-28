@@ -22,11 +22,6 @@ skills=(
   "frontend-slides"
   "decision-toolkit"
   "mcp-builder"
-  "audio-transcriber"
-  "deep-research"
-  "file-organizer"
-  "agent-browser"
-  "openrouter"
 )
 
 echo "Installing Claude meta-skills to $TARGET_DIR"

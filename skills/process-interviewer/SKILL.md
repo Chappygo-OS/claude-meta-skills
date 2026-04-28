@@ -56,8 +56,3 @@ When this skill is invoked:
 - This skill is especially useful for fuzzy processes the user does intuitively but has never written down.
 - The PRD output can be pasted into a new chat: "Build this skill according to the following PRD: [paste]"
 - Adapted from the Grill Me framework by Matt Pico, extended for skill building.
-
-## References
-
-Load on demand when an answer is vague and a deeper probe is needed:
-- `references/interview-rules.md` — 11 interview rules (one question per turn, scan workspace context first, reject vague answers, etc.) and 3 probe patterns for forcing concrete answers

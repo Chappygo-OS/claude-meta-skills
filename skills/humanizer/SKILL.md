@@ -71,9 +71,3 @@ Add your own patterns to avoid by editing this skill file. Example additions:
 
 - Run this on AI output, not on text the user wrote themselves.
 - The more specific the replacement, the better the result. Vague → concrete is the core transformation.
-
-## References
-
-Load on demand when the user asks for the full pattern catalog or worked examples:
-- `references/patterns.md` — full 24-pattern catalog (content / language / style / communication / filler-hedging) with trigger words for each
-- `references/examples.md` — four worked Before/After rewrites with change logs keyed to the catalog
