@@ -23,24 +23,35 @@ Not workflow tools. These are **meta-skills** — they upgrade Claude across any
 
 ## Install
 
-### One command (installs all 8)
+### Claude.ai (web app)
+
+Open a new chat and tell Claude:
+
+> Add these skills: https://github.com/Chappygo-OS/claude-meta-skills
+
+Claude will package them. Then go to **Settings → Customize → Skills** and import the result.
+
+---
+
+### Claude Code (desktop app / CLI)
+
+**One command — installs all 8:**
 
 ```bash
 curl -s https://raw.githubusercontent.com/Chappygo-OS/claude-meta-skills/main/install.sh | bash
 ```
 
-### Manual (pick what you need)
+Restart Claude Code. Invoke with `/humanizer`, `/fact-checker`, etc.
+
+**Manual — pick what you need:**
 
 ```bash
 git clone https://github.com/Chappygo-OS/claude-meta-skills.git
 cp -r claude-meta-skills/skills/humanizer ~/.claude/skills/
-cp -r claude-meta-skills/skills/fact-checker ~/.claude/skills/
 # repeat for any skill you want
 ```
 
-Invoke in Claude Code: `/humanizer`, `/fact-checker`, etc.
-
-> **Windows**: copy the folder to `%USERPROFILE%\.claude\skills\`
+> **Windows**: copy to `%USERPROFILE%\.claude\skills\`
 
 ---
 
