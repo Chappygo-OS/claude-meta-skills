@@ -58,6 +58,9 @@ Ce ne sont pas des outils pour une tâche précise. Ce sont des **améliorations
 
 <!-- screenshot : Les 4 étapes d'installation sur Claude.ai : (1) menu Customize, (2) onglet Skills, (3) bouton Create skill, (4) skill activée avec toggle vert. Fichier suggéré : docs/images/install-steps.png -->
 
+<img width="1021" height="336" alt="image" src="https://github.com/user-attachments/assets/89fcb427-2e36-4b52-81c8-e24c0bbc86e4" />
+
+
 **3. Utilisez la skill**
 
 Dans n'importe quelle conversation, tapez `/` suivi du nom de la skill :
