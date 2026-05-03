@@ -196,9 +196,10 @@ Construit un serveur MCP fonctionnel à partir de la documentation d'une API. Ou
 
 ## Créé par
 
-[Pablo Nastar](https://www.linkedin.com/in/pablo-nastar/) — Agence IA [ChappyGo](https://chappygo.com), Toulouse.
+[Pablo Nastar](https://www.linkedin.com/in/pablo-nastar/) — Toulouse.
 
-Nous aidons les PME à automatiser de vrais processus métier avec des agents IA — pas juste des chatbots.
+- **[ChappyGo](https://chappygo.com)** — Agence IA : nous aidons les PME à automatiser de vrais processus métier avec des agents IA — pas juste des chatbots.
+- **[Educasium](https://educasium.com)** — Formations IA : apprenez à utiliser Claude, les agents IA et les outils no-code pour transformer votre façon de travailler.
 
 ---
 
