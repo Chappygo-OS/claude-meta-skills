@@ -26,62 +26,74 @@ Ce ne sont pas des outils pour une tâche précise. Ce sont des **améliorations
 ## Comment installer
 
 > **Quelle version de Claude utilisez-vous ?**
-> - Application bureau ou terminal → suivez les instructions **Claude Code**
-> - Navigateur sur claude.ai → suivez les instructions **Claude.ai**
+> - **claude.ai** (navigateur) → suivez les instructions ci-dessous, c'est la voie principale
+> - **Claude Code** (application bureau ou terminal) → voir la section [Claude Code](#claude-code)
 
 ---
 
-### Claude Code (application bureau ou terminal)
+### Claude.ai — Installation en 3 étapes
 
-**Option A — Installer les 8 skills en une seule commande** *(Mac/Linux)*
+<!-- screenshot : Écran Customize > Skills de Claude.ai avec le bouton "+" visible et une skill déjà installée dans la liste. Fichier suggéré : docs/images/claudeai-skills-screen.png -->
 
-Ouvrez un terminal et collez :
+**1. Téléchargez le fichier ZIP de la skill**
+
+| Skill | Télécharger |
+|-------|-------------|
+| `/humanizer` | [humanizer.zip](dist/humanizer.zip) |
+| `/fact-checker` | [fact-checker.zip](dist/fact-checker.zip) |
+| `/prompt-master` | [prompt-master.zip](dist/prompt-master.zip) |
+| `/process-interviewer` | [process-interviewer.zip](dist/process-interviewer.zip) |
+| `/decision-toolkit` | [decision-toolkit.zip](dist/decision-toolkit.zip) |
+| `/frontend-slides` | [frontend-slides.zip](dist/frontend-slides.zip) |
+| `/find-skills` | [find-skills.zip](dist/find-skills.zip) |
+| `/mcp-builder` | [mcp-builder.zip](dist/mcp-builder.zip) |
+
+**2. Importez la skill dans Claude.ai**
+
+1. Ouvrez [claude.ai](https://claude.ai)
+2. Cliquez sur votre icône de profil en bas à gauche → **Customize**
+3. Onglet **Skills** → bouton **+** → **Create skill**
+4. Uploadez le fichier `.zip` téléchargé
+5. La skill apparaît dans votre liste — activez le toggle
+
+<!-- screenshot : Les 4 étapes d'installation sur Claude.ai : (1) menu Customize, (2) onglet Skills, (3) bouton Create skill, (4) skill activée avec toggle vert. Fichier suggéré : docs/images/install-steps.png -->
+
+**3. Utilisez la skill**
+
+Dans n'importe quelle conversation, tapez `/` suivi du nom de la skill :
+
+```
+/humanizer Voici mon texte à humaniser...
+/fact-checker Vérifiez cet article...
+/decision-toolkit Dois-je augmenter mes prix ?
+```
+
+<!-- screenshot : Une conversation Claude.ai avec le sélecteur de skills ouvert après avoir tapé "/", montrant les skills installées. Fichier suggéré : docs/images/slash-command-picker.png -->
+
+> **Les skills installées via Customize sont actives dans toutes vos conversations** — pas seulement dans un projet spécifique.
+
+---
+
+### Claude Code
+
+Pour l'application bureau Claude Code ou le terminal :
+
+**Toutes les skills en une commande** *(Mac/Linux)*
 
 ```bash
 curl -s https://raw.githubusercontent.com/Chappygo-OS/claude-meta-skills/main/install.sh | bash
 ```
 
-Relancez Claude Code. Vos skills sont prêtes.
-
-<!-- screenshot : Terminal montrant la commande d'installation qui se termine avec succès. Fichier suggéré : docs/images/install-terminal.png -->
-
-**Option B — Installer uniquement les skills dont vous avez besoin**
+**Une skill spécifique**
 
 ```bash
 git clone https://github.com/Chappygo-OS/claude-meta-skills.git
-```
-
-Copiez ensuite le dossier de la skill souhaitée :
-```bash
 cp -r claude-meta-skills/skills/humanizer ~/.claude/skills/
 ```
 
 > **Windows** : copiez le dossier dans `C:\Users\VotreNom\.claude\skills\`
 
-**Comment utiliser une skill après installation :**
-
-Tapez `/` suivi du nom de la skill dans n'importe quelle conversation Claude — ex. `/humanizer`.
-
-<!-- screenshot : Interface Claude Code avec le sélecteur de commandes `/` ouvert et les skills installées listées. Fichier suggéré : docs/images/slash-command-picker.png -->
-
----
-
-### Claude.ai (navigateur web)
-
-Ces skills sont conçues pour Claude Code, mais elles fonctionnent aussi sur Claude.ai.
-
-**Pour une utilisation ponctuelle :**
-1. Ouvrez le fichier `SKILL.md` de la skill souhaitée dans ce dépôt
-2. Copiez tout le texte
-3. Collez-le au début de votre message dans Claude.ai
-
-**Pour une utilisation permanente dans un Projet :**
-1. Ouvrez un Projet Claude.ai (ou créez-en un)
-2. Allez dans **Instructions du projet**
-3. Collez le contenu du `SKILL.md`
-4. Vous pouvez aussi uploader les fichiers du dossier `references/` comme Connaissances du projet — Claude les utilisera automatiquement
-
-<!-- screenshot : Panneau des instructions d'un Projet Claude.ai avec un SKILL.md collé à l'intérieur. Fichier suggéré : docs/images/claudeai-project-instructions.png -->
+Relancez Claude Code puis utilisez `/skill-name` dans n'importe quelle conversation.
 
 ---
 
@@ -169,16 +181,16 @@ Construit un serveur MCP fonctionnel à partir de la documentation d'une API. Ou
 
 ## Compatibilité
 
-| Skill | Claude Code | Claude.ai |
-|-------|:-----------:|:---------:|
+| Skill | Claude.ai | Claude Code |
+|-------|:---------:|:-----------:|
 | `/humanizer` | ✅ | ✅ |
-| `/fact-checker` | ✅ | ✅ Recherche web requise |
+| `/fact-checker` | ✅ Recherche web requise | ✅ |
 | `/prompt-master` | ✅ | ✅ |
-| `/decision-toolkit` | ✅ | ✅ HTML s'affiche comme artefact |
-| `/frontend-slides` | ✅ | ✅ HTML s'affiche comme artefact |
+| `/decision-toolkit` | ✅ HTML s'affiche comme artefact | ✅ |
+| `/frontend-slides` | ✅ HTML s'affiche comme artefact | ✅ |
 | `/process-interviewer` | ✅ | ✅ |
-| `/find-skills` | ✅ | ⚠️ Recherche web requise |
-| `/mcp-builder` | ✅ | ⚠️ Génération de code OK ; installation nécessite Claude Code |
+| `/find-skills` | ⚠️ Recherche web requise | ✅ |
+| `/mcp-builder` | ⚠️ Génération de code OK ; installation nécessite Claude Code | ✅ |
 
 ---
 
