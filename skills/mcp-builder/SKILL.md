@@ -1,58 +1,76 @@
 ---
 name: mcp-builder
-description: Builds a working MCP server for any software with an API — gets Claude connected to tools that don't have a native integration yet
+description: Builds a working MCP server for any software with an API — gets Claude connected to tools that don't have a native integration yet. Use when building MCP servers to integrate external APIs or services, whether in Python (FastMCP) or Node/TypeScript (MCP SDK). Guides the full workflow: research, implementation, testing, and evaluation.
 ---
 
 # MCP Builder
 
-MCP (Model Context Protocol) is how Claude Code connects to external software to read data and take actions. Most tools don't have a native MCP integration yet. This skill builds one from scratch using the software's API documentation. Output: a working MCP server file + config JSON + step-by-step install guide.
+MCP (Model Context Protocol) is how Claude connects to external software to read data and take actions. Most tools don't have a native MCP integration yet. This skill builds one from scratch using the software's API documentation.
+
+Output: a working MCP server file + config JSON + step-by-step install guide + evaluation questions.
 
 **Note**: this is a native Anthropic skill available in Claude Code by default. It's included here for visibility — many users don't know it exists.
 
-## Usage
+---
 
-```
-/mcp-builder [software you want to connect]
-```
+## RECOMMENDED STACK
 
-Examples:
-```
-/mcp-builder Build an MCP server for Circle.so
-/mcp-builder I need Claude to connect to our internal CRM at [API docs URL]
-/mcp-builder Build an MCP for Reddit so I can read and post programmatically
-/mcp-builder Connect Claude to our Postgres database so I can query it in plain English
-/mcp-builder Build an MCP for Stripe so Claude can check subscription status and invoices
-```
+- **Language**: TypeScript (high-quality SDK support, good compatibility, widely documented, strong static typing)
+- **Transport**: Streamable HTTP for remote servers (stateless JSON, simpler to scale). stdio for local servers.
+- Python is fully supported — specify preference, TypeScript is the default.
 
-## Instructions for Claude
+---
 
-When this skill is invoked:
+## PHASE 1 — RESEARCH AND PLANNING
 
-### 1. Clarify scope
+### 1.1 Clarify scope
 
 Ask:
 - What software do you want to connect?
 - What specific actions do you need Claude to perform? (read data, create records, trigger actions, search, etc.)
-- Do you have API docs, an API key, or an OpenAPI spec? If yes, share the URL or paste the key endpoints.
-- Language preference for the server: TypeScript (default) or Python?
+- Do you have API docs, an API key, or an OpenAPI spec?
+- Language preference: TypeScript (default) or Python?
 
-Don't over-specify — 3–5 tools per MCP server is ideal. A focused server is easier to maintain and debug than a sprawling one.
+Don't over-specify — 3–5 tools per MCP server is ideal.
 
-### 2. Read and analyze the API documentation
+### 1.2 Study the MCP protocol
+
+Start with the sitemap to find relevant pages: `https://modelcontextprotocol.io/sitemap.xml`
+
+Fetch specific pages with `.md` suffix for markdown format (e.g., `https://modelcontextprotocol.io/specification/draft.md`).
+
+### 1.3 Load framework documentation
+
+- [📋 MCP Best Practices](./references/mcp_best_practices.md) — universal naming, response formats, pagination, transport, security
+
+**For TypeScript**: fetch `https://raw.githubusercontent.com/modelcontextprotocol/typescript-sdk/main/README.md`
+
+**For Python**: fetch `https://raw.githubusercontent.com/modelcontextprotocol/python-sdk/main/README.md`
+
+### 1.4 Read and analyze the target API
 
 Fetch and analyze the API docs for the requested endpoints. Identify:
 - **Authentication method**: API key in header / query param, Bearer token, OAuth 2.0, Basic Auth
 - **Base URL** and versioning pattern
 - **Relevant endpoints**: the specific operations the user needs
-- **Request schemas**: required fields, optional fields, data types
-- **Response schemas**: what the API returns, including error responses
-- **Rate limits**: requests per second/minute/day — add to comments in the server
-- **Pagination**: cursor-based or offset-based — handle in list operations
+- **Request/response schemas**: required fields, data types
+- **Rate limits**: add to comments in the server
+- **Pagination**: cursor-based or offset-based
 
 See `references/auth-patterns.md` for implementation patterns per auth type.
-See `references/common-apis.md` for pre-mapped patterns for popular APIs.
+See `references/common-apis.md` for pre-mapped patterns for popular APIs (Notion, HubSpot, Stripe, Airtable, Slack, etc.).
 
-### 3. Generate the MCP server
+---
+
+## PHASE 2 — IMPLEMENTATION
+
+### 2.1 Tool naming conventions
+
+- Use snake_case with service prefix
+- Format: `{service}_{action}_{resource}`
+- Example: `slack_send_message`, `github_create_issue`
+
+### 2.2 Generate the MCP server
 
 Produce a single file (`mcp-[service-name].ts` or `mcp-[service-name].py`).
 
@@ -94,13 +112,11 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         required: ["[required_params]"],
       },
     },
-    // more tools
   ],
 }));
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
-
   if (name === "[tool_name]") {
     const response = await fetch(`${BASE_URL}/[endpoint]`, {
       headers: { Authorization: `Bearer ${API_KEY}` },
@@ -111,7 +127,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const data = await response.json();
     return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
   }
-
   throw new Error(`Unknown tool: ${name}`);
 });
 
@@ -119,18 +134,33 @@ const transport = new StdioServerTransport();
 await server.connect(transport);
 ```
 
-**Python structure** (when requested):
-
 See `references/templates.md` for the full Python boilerplate.
 
-**Rules for every server**:
-- Read credentials from environment variables only — never hardcode
-- Wrap all API calls in try/catch with clear error messages that include the status code and API response
-- Add JSDoc/docstring for each tool explaining what it does and when to use it
-- Handle pagination automatically for list operations (fetch all pages, return combined results)
-- Include the API rate limit as a comment on the fetch call
+### 2.3 Tool annotations
 
-### 4. Generate the config JSON
+Add to every tool:
+```typescript
+annotations: {
+  readOnlyHint: true,    // does not modify its environment
+  destructiveHint: false, // may perform destructive updates
+  idempotentHint: false,  // repeated calls have no additional effect
+  openWorldHint: true     // interacts with external entities
+}
+```
+
+### 2.4 Rules for every server
+
+- Read credentials from environment variables only — never hardcode
+- Wrap all API calls in try/catch with clear error messages including status code and API response
+- Add JSDoc/docstring for each tool explaining what it does and when to use it
+- Handle pagination automatically for list operations (default limit: 20–50 items)
+- Return `has_more`, `next_offset`, `total_count` in paginated responses
+
+---
+
+## PHASE 3 — CONFIG AND INSTALLATION
+
+### 3.1 Generate config JSON
 
 ```json
 {
@@ -146,56 +176,73 @@ See `references/templates.md` for the full Python boilerplate.
 }
 ```
 
-For Python servers:
-```json
-{
-  "mcpServers": {
-    "[service-name]": {
-      "command": "python",
-      "args": ["/absolute/path/to/mcp-[service].py"],
-      "env": {
-        "[SERVICE]_API_KEY": "your_api_key_here"
-      }
-    }
-  }
-}
-```
+For Python servers: replace `"command": "node"` with `"command": "python"`.
 
-### 5. Provide complete installation instructions
+### 3.2 Installation instructions
 
-Step by step:
-
-1. **Save the server file** — where to save it (suggest `~/.claude/mcp-servers/`)
+1. **Save the server file** — suggest `~/.claude/mcp-servers/`
 2. **Install dependencies**:
-   - TypeScript: `npm install @modelcontextprotocol/sdk` (in the server directory)
+   - TypeScript: `npm install @modelcontextprotocol/sdk`
    - Python: `pip install mcp`
 3. **Set the environment variable**:
-   - macOS/Linux: `export [SERVICE]_API_KEY=your_key` (add to `~/.zshrc` or `~/.bashrc`)
+   - macOS/Linux: `export [SERVICE]_API_KEY=your_key` (add to `~/.zshrc`)
    - Windows: `setx [SERVICE]_API_KEY your_key`
 4. **Add config to Claude**:
-   - Claude Code: open `~/.claude/settings.json`, add to the `mcpServers` object
+   - Claude Code: open `~/.claude/settings.json`, add to `mcpServers` object
    - Claude.ai: Settings → Developer → Edit Config → paste the JSON block
-5. **Restart Claude** and verify: the service should appear in your integrations list
-6. **Test the connection**: paste a test command the user can run immediately
+5. **Restart Claude** and verify the service appears in your integrations
+6. **Test with MCP Inspector**: `npx @modelcontextprotocol/inspector`
 
-### 6. Offer to add the config directly
+### 3.3 Offer to add the config directly
 
 If the user has Claude Code and the config file is accessible, offer to add the JSON block automatically to `~/.claude/settings.json`.
 
-## How to find your Claude config file
+---
+
+## PHASE 4 — EVALUATION
+
+After implementing the MCP server, create comprehensive evaluations to test its effectiveness.
+
+### 4.1 Create 10 evaluation questions
+
+Questions must be:
+- **Independent**: not dependent on other questions
+- **Read-only**: only non-destructive operations required
+- **Complex**: requiring multiple tool calls and deep exploration
+- **Realistic**: based on real use cases
+- **Verifiable**: single, clear answer that can be verified by string comparison
+- **Stable**: answer won't change over time
+
+### 4.2 Output format
+
+```xml
+<evaluation>
+  <qa_pair>
+    <question>Find discussions about AI model launches with animal codenames. One model needed a specific safety designation that uses the format ASL-X. What number X was being determined for the model named after a spotted wild cat?</question>
+    <answer>3</answer>
+  </qa_pair>
+  <!-- More qa_pairs... -->
+</evaluation>
+```
+
+---
+
+## Claude config file locations
 
 - **Claude Code**: `~/.claude/settings.json`
 - **Claude.ai**: Settings → Developer → Edit Config
 - **Claude Desktop**: `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS)
+
+---
 
 ## Skill integrations
 
 - **`/process-interviewer`** — interview the user before building to clarify exactly which API operations they need
 - **`/fact-checker`** — verify API endpoint details if the docs seem outdated
 
-## Notes
+## Reference files
 
-- Works best when the target software has public, well-documented API docs.
-- For OAuth-based APIs (Google, Salesforce, HubSpot), the auth flow requires additional setup — Claude will walk through the OAuth dance step by step.
-- Once installed, the new connector appears in your integrations list and Claude can use it like any native tool.
-- Reference files: `references/templates.md`, `references/auth-patterns.md`, `references/common-apis.md`
+- `references/mcp_best_practices.md` — naming conventions, response formats, transport, security, error handling
+- `references/templates.md` — full TypeScript and Python boilerplates
+- `references/auth-patterns.md` — 6 auth patterns (API key, Bearer, Basic, query string, OAuth)
+- `references/common-apis.md` — pre-researched integration notes for Notion, HubSpot, Stripe, Airtable, Slack, etc.

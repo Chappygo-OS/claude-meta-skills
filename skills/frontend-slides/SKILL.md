@@ -1,87 +1,96 @@
 ---
 name: frontend-slides
-description: Builds animated HTML presentations from scratch or from PowerPoint files — apply your brand guide for instant personalized decks
+description: Builds animated HTML presentations from scratch, from PowerPoint files, or by converting outlines — apply your brand guide for instant personalized decks. Use when the user wants to build a presentation, convert a PPT/PPTX to web, create slides for a talk/pitch, or explore presentation styles.
 ---
 
 # Frontend Slides
 
-Claude can generate HTML presentations, but the default quality isn't good enough to use in a sales call, YouTube video, or company meeting. This skill fixes that: it embeds best practices for slide layout, animation, and visual hierarchy, and applies your brand guide automatically when provided.
+Create zero-dependency, animation-rich HTML presentations that run entirely in the browser. Helps non-designers discover their aesthetic through visual exploration rather than abstract choices.
 
-## Usage
+## Non-Negotiables
 
-```
-/frontend-slides [topic or request]
-```
+1. **Zero dependencies**: default to one self-contained HTML file with inline CSS and JS.
+2. **Viewport fit is mandatory**: every slide must fit inside one viewport with no internal scrolling.
+3. **Show, don't tell**: use visual previews instead of abstract style questionnaires.
+4. **Distinctive design**: avoid generic purple-gradient, Inter-on-white, template-looking decks.
+5. **Production quality**: keep code accessible, responsive, and performant.
 
-From scratch:
-```
-/frontend-slides Build a 10-slide pitch deck for a B2B SaaS product targeting HR teams
-/frontend-slides Create an explainer deck on how AI agents work. Target audience: non-technical executives
-```
+Before generating, read `STYLE_PRESETS.md` for the viewport-safe CSS base, density limits, preset catalog, and CSS gotchas.
 
-With brand guide:
-```
-/frontend-slides Create a product update deck for our Q2 all-hands. Brand: primary #1A1A2E, font Inter, logo top-left
-```
+---
 
-Convert existing file:
-```
-/frontend-slides Convert the attached PPT into an animated HTML presentation
-/frontend-slides Turn this outline into a full slide deck: [paste outline]
-```
+## STEP 1 — DETECT MODE
 
-## Instructions for Claude
+Choose one path:
+- **New presentation**: user has a topic, notes, or full draft
+- **PPT conversion**: user has `.ppt` or `.pptx`
+- **Enhancement**: user already has HTML slides and wants improvements
 
-When this skill is invoked:
+---
 
-### 1. Determine inputs and intent
+## STEP 2 — DISCOVER CONTENT
 
-- **Source**: from scratch / from file (PPT, outline, notes) / from URL
-- **Purpose**: sales pitch / explainer / all-hands update / YouTube / tutorial / workshop
+Ask only the minimum needed:
+- **Purpose**: pitch, teaching, conference talk, sales, internal update, YouTube
 - **Audience**: executives / technical team / customers / general public
-- **Length**: how many slides? If not specified: 8–12 for most use cases
-- **Brand guide**: provided / describe / use preset
+- **Length**: short (5–10), medium (10–20), long (20+)
+- **Content state**: finished copy, rough notes, topic only
 
-If any of these are unclear, ask before building. Wrong assumptions here waste effort.
+If the user has content, ask them to paste it before styling.
 
-### 2. Apply brand guide or select style preset
+---
 
-If a brand guide is provided, extract:
+## STEP 3 — DISCOVER STYLE
+
+Default to visual exploration.
+
+If the user already knows the desired preset, skip previews and use it directly.
+
+Otherwise:
+1. Ask what feeling the deck should create: impressed, energized, focused, inspired.
+2. Generate **3 single-slide preview files** in `.ecc-design/slide-previews/`.
+3. Each preview must be self-contained, show typography/color/motion clearly.
+4. Ask the user which preview to keep or what elements to mix.
+
+Use the preset guide in `STYLE_PRESETS.md` when mapping mood to style.
+
+**If a brand guide is provided**, extract instead:
 - Primary and secondary colors → CSS custom properties (`--color-primary`, `--color-accent`)
 - Typography: font family, weights (headline, body, caption sizes)
 - Logo: URL or placeholder, placement (top-left default), max size
 - Visual rules: border styles, spacing, gradients, icon style
 
-If no brand guide is provided, choose from `references/presets.md`:
-- **minimal** — white background, dark text, thin lines. Best for: business, consulting, internal docs
-- **neon-cyber** — dark background, neon accents, glow effects. Best for: AI, tech, developer audiences
-- **warm-editorial** — warm tones, serif headlines, editorial layout. Best for: media, content, creative
-- **corporate-blue** — classic navy and white, clean grid. Best for: enterprise, finance, B2B
-- **bold-impact** — large type, high contrast, full-bleed images. Best for: keynotes, sales, YouTube
+---
 
-### 3. Structure the deck
-
-Use these layout principles (see `references/layout-rules.md` for per-slide-type specs):
-- **Max 1 key idea per slide** — if a slide needs a long explanation, split it
-- **Title**: 5–7 words, specific, not vague ("We grew 3x" not "Growth Results")
-- **Body**: max 3 bullet points per slide, or 1 visual/chart — never both
-- **Visuals** > text whenever possible — diagrams, icons, charts, screenshots
-- **Progress indicator**: slide number (X/N) or a thin top progress bar
-- **Consistent header/footer** across all slides — build it once in CSS
-- **Speaker notes** section: hidden div per slide, shown on keypress `N`
+## STEP 4 — STRUCTURE THE DECK
 
 Slide flow for most decks:
 1. Title slide (hook — one bold claim or question)
 2. Problem/context (why this matters)
-3–8. Body slides (one idea each)
-9. Summary or key takeaway
-10. CTA or next steps
+3–N. Body slides (one idea each)
+N-1. Summary or key takeaway
+N. CTA or next steps
 
-### 4. Build the HTML
+Content density limits (never exceed without splitting the slide):
 
-Produce a single self-contained `.html` file with:
+| Slide type | Maximum content |
+|------------|-----------------|
+| Title | 1 heading + 1 subtitle + optional tagline |
+| Content | 1 heading + 4–6 bullets or 2 paragraphs |
+| Feature grid | 6 cards maximum |
+| Code | 8–10 lines maximum |
+| Quote | 1 quote + attribution |
+| Image | 1 image, ideally under 60vh |
 
-**Structure**:
+See `references/layout-rules.md` for per-slide-type specs.
+
+---
+
+## STEP 5 — BUILD THE HTML
+
+Output `presentation.html` or `[presentation-name].html`.
+
+Required HTML structure:
 ```html
 <!DOCTYPE html>
 <html>
@@ -101,38 +110,74 @@ Produce a single self-contained `.html` file with:
 </html>
 ```
 
-**Required features**:
-- CSS transitions for slide changes (fade default, slide-left for sequential content)
+Required features:
+- Viewport-safe CSS base from `STYLE_PRESETS.md` (mandatory — copy the base block)
+- CSS custom properties for theme values
 - Keyboard navigation: `→` / `Space` = next, `←` = previous, `F` = fullscreen, `N` = toggle speaker notes
-- Click anywhere to advance
-- Auto-fit to viewport (no scrolling)
-- All resources inline — zero external dependencies (no CDN, no Google Fonts unless user confirms internet access)
-- If using fonts: embed a system font stack or base64-encode a single web font
+- Click/touch/swipe navigation
+- Progress indicator or slide index
+- Intersection Observer for reveal animations
+- Reduced-motion support (`prefers-reduced-motion`)
+- All resources inline — zero external dependencies
 
-**Optional enhancements** (add when appropriate):
-- Slide transition animations per slide type (fade-in for title, wipe for reveals)
+Optional enhancements (add when appropriate):
 - Code syntax highlighting (inline CSS, no external lib)
 - Animated counters for stats slides
 - Progressive bullet reveal (click to show one at a time)
+- Speaker notes section: hidden div per slide, shown on keypress `N`
 - Dark/light mode toggle
 
-### 5. Deliver
+---
 
-- Save the file as `[deck-topic]-slides.html`
-- Provide a brief summary:
-  - Number of slides
-  - Style applied
-  - Navigation instructions
-  - Any slides where content was assumed (so user can verify)
+## STEP 6 — ENFORCE VIEWPORT FIT (HARD GATE)
 
-### 6. Offer customizations
+Every `.slide` must use:
+```css
+height: 100vh;
+height: 100dvh;
+overflow: hidden;
+```
 
-After delivery, ask:
-- "Want to adjust any colors, fonts, or animations?"
-- "Should I add speaker notes to any slides?"
-- "Want me to save this brand guide into the skill so you never have to specify it again?"
+Rules:
+- All typography must use `clamp()`
+- When content does not fit, split into multiple slides
+- Never solve overflow by shrinking text below readable sizes
+- Never allow scrollbars inside a slide
+- Negative CSS functions like `-clamp(...)` are INVALID — use `calc(-1 * clamp(...))` instead
 
-## Save your brand permanently
+See the full mandatory base CSS block in `STYLE_PRESETS.md`.
+
+---
+
+## STEP 7 — VALIDATE AND DELIVER
+
+Check the finished deck at minimum at: 1920×1080, 1280×720, 768×1024, 375×667, 667×375.
+
+If browser automation is available, verify no slide overflows and keyboard navigation works.
+
+At handoff:
+- Delete temporary preview files unless the user wants to keep them
+- Open the deck with the platform-appropriate opener:
+  - macOS: `open file.html`
+  - Linux: `xdg-open file.html`
+  - Windows: `start "" file.html`
+- Summarize: file path, preset used, slide count, easy theme customization points
+
+---
+
+## PPT / PPTX CONVERSION
+
+For PowerPoint conversion:
+1. Prefer `python3` with `python-pptx` to extract text, images, and notes.
+2. If `python-pptx` is unavailable, ask whether to install it or fall back to a manual workflow.
+3. Preserve slide order, speaker notes, and extracted assets.
+4. After extraction, run the same style-selection workflow as a new presentation.
+
+Keep conversion cross-platform. Do not rely on macOS-only tools when Python can do the job.
+
+---
+
+## SAVE YOUR BRAND PERMANENTLY
 
 Tell Claude once and never repeat:
 ```
@@ -140,15 +185,17 @@ Update the frontend-slides skill: primary color #1A1A2E, accent #E94560,
 font Inter, logo top-left. Save this as my default brand.
 ```
 
+---
+
 ## Skill integrations
 
 - **`/humanizer`** — run on slide text before finalizing to remove AI writing markers
 - **`/fact-checker`** — verify any statistics or claims in the slides
 - **`/prompt-master`** — clarify a vague deck brief before building
 
-## Notes
+## Reference files
 
-- Output is a single `.html` file — share directly, embed in a website, or present in browser fullscreen (`F11`).
-- For YouTube content: open in Chrome, go fullscreen, record with Loom or OBS.
-- For PDF export: open in Chrome → Print → Save as PDF → "Background graphics" on.
-- Reference files: `references/presets.md`, `references/layout-rules.md`, `references/animation-library.md`
+- `STYLE_PRESETS.md` — viewport-safe CSS base, 12 style presets, mood mapping, CSS gotchas
+- `references/presets.md` — original 5-preset catalog
+- `references/layout-rules.md` — specs for 8 slide types
+- `references/animation-library.md` — CSS animation code snippets

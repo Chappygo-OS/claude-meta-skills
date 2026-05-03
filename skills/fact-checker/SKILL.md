@@ -77,6 +77,7 @@ See `references/domain-guides.md` for domain-specific verification guidance (AI/
 
 - ✅ **True** — confirmed by primary sources
 - ⚠️ **Mostly true** — correct but missing important nuance, context, or qualifiers
+- 🔶 **Mixed** — claim contains both true and false elements; partly accurate but also partly wrong
 - ❓ **Unverifiable** — cannot be confirmed or denied with available sources; may be an internal claim, estimate, or opinion presented as fact
 - ❌ **False** — contradicted by primary sources
 - 🔄 **Outdated** — was true but is no longer accurate (note the current state)
@@ -146,6 +147,33 @@ After the full report, add:
 **Lower confidence checks**: [n claims where only secondary sources were available]
 **Could not verify**: [n claims — recommend manual verification before publishing]
 ```
+
+## Common Patterns to Watch For
+
+### Statistical Manipulation
+- Cherry-picking data that supports a predetermined conclusion
+- Misleading graphs or scales (truncated axes, cherry-picked timeframes)
+- Correlation vs causation — two things happening together ≠ one causes the other
+- Inappropriate comparisons (different populations, timeframes, or methodologies)
+
+### Context Removal
+- Quote mining — taking statements out of context to reverse the original meaning
+- Omitting important qualifiers ("in some cases", "under specific conditions")
+- Ignoring relevant timeframes or conditions that limit a claim's applicability
+- Removing statistical caveats (confidence intervals, sample sizes, limitations)
+
+### False Equivalences
+- Comparing incomparable things as if they are equivalent
+- Treating all sources as equally valid regardless of credibility
+- "Both-sidesing" settled science (evolution, climate change, vaccine safety)
+
+### Logical Fallacies
+- Ad hominem — attacking the person making the claim instead of the claim itself
+- Appeal to authority (improper) — citing an expert outside their area of expertise
+- False dichotomies — presenting only two options when more exist
+- Slippery slope — assuming one change will inevitably lead to extreme consequences
+
+---
 
 ## Skill integrations
 

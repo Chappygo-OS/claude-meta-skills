@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{DECISION_TITLE}} — Decision Toolkit</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f1f5f9;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #64748b;
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
+      --success: #16a34a;
+      --radius: 12px;
+      --shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+    }
+
+    body {
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* Top bar */
+    .topbar {
+      background: #0f172a;
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .topbar h1 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      opacity: 0.9;
+      max-width: 65%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .step-counter {
+      font-size: 0.78rem;
+      opacity: 0.55;
+      white-space: nowrap;
+    }
+
+    .progress-wrap { background: #1e293b; height: 3px; }
+    .progress-bar {
+      height: 3px;
+      background: var(--accent);
+      transition: width 0.35s ease;
+    }
+
+    /* Layout */
+    .main {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 7rem;
+    }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 2rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .screen-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .screen-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 0.5rem;
+    }
+
+    .screen-desc {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.65;
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.83rem;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+      margin-top: 1.1rem;
+    }
+
+    label:first-of-type { margin-top: 0; }
+
+    input[type="text"],
+    textarea,
+    select {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 0.65rem 0.85rem;
+      font-size: 0.88rem;
+      font-family: inherit;
+      color: var(--text);
+      background: white;
+      transition: border-color 0.15s;
+      resize: vertical;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+    }
+
+    textarea { min-height: 90px; }
+    textarea.tall { min-height: 130px; }
+
+    /* Bias checkboxes */
+    .bias-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.55rem;
+      margin-top: 0.4rem;
+    }
+
+    @media (max-width: 520px) { .bias-grid { grid-template-columns: 1fr; } }
+
+    .bias-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      padding: 0.6rem 0.75rem;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      line-height: 1.45;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .bias-item:hover { border-color: var(--accent); background: var(--accent-light); }
+    .bias-item input[type="checkbox"] { margin-top: 2px; flex-shrink: 0; accent-color: var(--accent); }
+
+    /* Door type */
+    .door-options { display: flex; gap: 0.75rem; margin-top: 0.4rem; }
+    .door-option {
+      flex: 1;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      padding: 0.8rem;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .door-option:hover { border-color: var(--accent); background: var(--accent-light); }
+    .door-option input { margin-top: 2px; flex-shrink: 0; accent-color: var(--accent); }
+
+    .tag {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+
+    .tag-green { background: #dcfce7; color: #166534; }
+    .tag-red { background: #fee2e2; color: #991b1b; }
+
+    /* Scenario table */
+    .scenario-table { width: 100%; border-collapse: collapse; font-size: 0.83rem; margin-top: 0.5rem; }
+    .scenario-table th,
+    .scenario-table td { border: 1.5px solid var(--border); padding: 0.5rem 0.6rem; text-align: left; }
+    .scenario-table th { background: #f8fafc; font-weight: 600; font-size: 0.78rem; }
+    .scenario-table input {
+      border: none; width: 100%; font-size: 0.83rem;
+      font-family: inherit; padding: 0; background: transparent;
+    }
+    .scenario-table input:focus { outline: none; }
+
+    /* Navigation */
+    .nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: white;
+      border-top: 1px solid var(--border);
+      padding: 0.9rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      z-index: 100;
+    }
+
+    .saved-indicator {
+      font-size: 0.75rem;
+      color: var(--success);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .saved-indicator.show { opacity: 1; }
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      background: white;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+
+    button:hover { border-color: var(--accent); color: var(--accent); }
+    button.primary { background: var(--accent); border-color: var(--accent); color: white; }
+    button.primary:hover { background: #1d4ed8; border-color: #1d4ed8; }
+    button.ghost { border-color: transparent; color: var(--muted); }
+    button.ghost:hover { color: var(--text); border-color: var(--border); }
+
+    /* Welcome hero */
+    .welcome-hero {
+      text-align: center;
+      padding: 1.5rem 0 0.5rem;
+    }
+
+    .welcome-hero .emoji { font-size: 2.8rem; margin-bottom: 0.75rem; }
+    .welcome-hero h2 { font-size: 1.7rem; font-weight: 800; margin-bottom: 0.4rem; }
+    .welcome-hero p { font-size: 0.92rem; color: var(--muted); max-width: 480px; margin: 0 auto; line-height: 1.65; }
+
+    /* Summary */
+    .summary-section {
+      border-left: 3px solid var(--accent);
+      padding-left: 1rem;
+      margin-bottom: 1.4rem;
+    }
+
+    .summary-section h3 {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+    }
+
+    .summary-section p {
+      font-size: 0.88rem;
+      line-height: 1.65;
+      white-space: pre-wrap;
+    }
+
+    .open-questions-box {
+      background: #fffbeb;
+      border: 1.5px solid #fbbf24;
+      border-radius: 10px;
+      padding: 1.25rem;
+      margin-top: 0.5rem;
+    }
+
+    .open-questions-box h3 {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #92400e;
+      margin-bottom: 0.75rem;
+    }
+
+    .open-questions-box ol { padding-left: 1.1rem; }
+    .open-questions-box li { font-size: 0.88rem; line-height: 1.6; margin-bottom: 0.5rem; }
+
+    /* Print */
+    @media print {
+      .topbar, .nav, .progress-wrap { display: none !important; }
+      .screen { display: block !important; page-break-inside: avoid; }
+      .card { box-shadow: none; border: 1px solid #e2e8f0; margin-bottom: 1rem; }
+      .main { padding: 0; max-width: 100%; }
+      body { background: white; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1 id="header-title">{{DECISION_TITLE}}</h1>
+  <span class="step-counter" id="step-counter">Step 1 of 13</span>
+</div>
+<div class="progress-wrap">
+  <div class="progress-bar" id="progress-bar" style="width: 7.7%"></div>
+</div>
+
+<div class="main">
+
+  <!-- Screen 0: Welcome -->
+  <div class="screen active" data-step="0">
+    <div class="card">
+      <div class="welcome-hero">
+        <div class="emoji">⚖️</div>
+        <h2>Decision Toolkit</h2>
+        <p>A structured 9-lens framework that helps you think clearly about significant decisions — without deciding for you.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="screen-label">Before we begin</div>
+      <div class="screen-title">What are you deciding?</div>
+      <label for="f-decision">Decision statement</label>
+      <textarea id="f-decision" class="tall" placeholder="e.g. Should I raise my consulting prices by 30% starting next quarter?" data-key="decision">{{DECISION_STATEMENT}}</textarea>
+      <label for="f-type">Decision type</label>
+      <select id="f-type" data-key="decisionType">
+        <option value="">Select a type…</option>
+        <option value="opportunity">Opportunity Evaluation — Should I pursue this?</option>
+        <option value="resource">Resource Allocation — Where should I invest?</option>
+        <option value="risk">Risk Assessment — What could go wrong?</option>
+        <option value="tradeoff">Trade-off Navigation — Which option?</option>
+      </select>
+      <label for="f-deadline">Deadline for this decision</label>
+      <input type="text" id="f-deadline" placeholder="e.g. End of this month, by Friday" data-key="deadline" value="{{DECISION_DEADLINE}}">
+    </div>
+  </div>
+
+  <!-- Screen 1: Frame -->
+  <div class="screen" data-step="1">
+    <div class="card">
+      <div class="screen-label">Step 1 of 9 — Framing</div>
+      <div class="screen-title">Frame the Decision</div>
+      <div class="screen-desc">Surface hidden sub-decisions. Confirm you're solving the right problem before applying any lens.</div>
+    </div>
+    <div class="card">
+      <label for="f-restate">Restate in one precise sentence</label>
+      <textarea id="f-restate" placeholder="The clearest possible version of what needs to be decided…" data-key="restate">{{RESTATED_DECISION}}</textarea>
+      <label for="f-sub">Hidden sub-decisions (if any)</label>
+      <textarea id="f-sub" placeholder="e.g. 'Raise prices' contains two: whether to raise at all, and how to roll it out." data-key="subDecisions">{{SUB_DECISIONS}}</textarea>
+      <label for="f-default">What happens if no decision is made?</label>
+      <input type="text" id="f-default" placeholder="The default path if you do nothing…" data-key="defaultPath" value="{{DEFAULT_PATH}}">
+    </div>
+  </div>
+
+  <!-- Screen 2: Context -->
+  <div class="screen" data-step="2">
+    <div class="card">
+      <div class="screen-label">Step 2 of 9 — Context</div>
+      <div class="screen-title">Gather Context</div>
+      <div class="screen-desc">Establish the conditions that will shape every lens that follows.</div>
+    </div>
+    <div class="card">
+      <label for="f-trigger">What's forcing this decision now?</label>
+      <input type="text" id="f-trigger" placeholder="External event, internal pressure, expiring window…" data-key="trigger" value="{{DECISION_TRIGGER}}">
+      <label for="f-stakeholders">Who has a vote or veto?</label>
+      <input type="text" id="f-stakeholders" placeholder="Names, roles, or relationship types" data-key="stakeholders" value="{{STAKEHOLDERS}}">
+      <label for="f-success">What does success look like in 6 months?</label>
+      <textarea id="f-success" placeholder="Concrete, observable outcome — not just 'things go well'…" data-key="success6m">{{SUCCESS_6M}}</textarea>
+      <label for="f-risk">What's the biggest risk you're trying to avoid?</label>
+      <textarea id="f-risk" placeholder="The failure mode that scares you most…" data-key="biggestRisk">{{BIGGEST_RISK}}</textarea>
+    </div>
+  </div>
+
+  <!-- Screen 3: First Principles (A) -->
+  <div class="screen" data-step="3">
+    <div class="card">
+      <div class="screen-label">Lens A · Step 3 of 9</div>
+      <div class="screen-title">Start-Fresh Test</div>
+      <div class="screen-desc">If you were starting from zero today with current knowledge, would you choose this path? This strips sunk costs and legacy assumptions.</div>
+    </div>
+    <div class="card">
+      <label for="f-fresh">If starting from scratch today, what would you do?</label>
+      <textarea id="f-fresh" placeholder="Ignore what you've already invested. With today's knowledge and options…" data-key="freshStart">{{FRESH_START}}</textarea>
+      <label for="f-stale">What assumptions are you carrying from the past?</label>
+      <textarea id="f-stale" placeholder="Beliefs or constraints you haven't questioned recently…" data-key="staleAssumptions">{{STALE_ASSUMPTIONS}}</textarea>
+    </div>
+  </div>
+
+  <!-- Screen 4: Stakeholders (B) -->
+  <div class="screen" data-step="4">
+    <div class="card">
+      <div class="screen-label">Lens B · Step 4 of 9</div>
+      <div class="screen-title">Stakeholder Mapping</div>
+      <div class="screen-desc">Every decision affects people beyond the decision-maker. Map them before committing.</div>
+    </div>
+    <div class="card">
+      <label for="f-affected">Who is directly affected by each option?</label>
+      <textarea id="f-affected" placeholder="Team, clients, partners, family…" data-key="directlyAffected">{{DIRECTLY_AFFECTED}}</textarea>
+      <label for="f-buyin">Whose buy-in is required for implementation?</label>
+      <textarea id="f-buyin" placeholder="Who needs to say yes — or at least not block this?" data-key="buyinNeeded">{{BUYIN_NEEDED}}</textarea>
+      <label for="f-blockers">Who could block or undermine this after it's made?</label>
+      <input type="text" id="f-blockers" placeholder="Anyone with the power or motivation to resist…" data-key="blockers" value="{{BLOCKERS}}">
+    </div>
+  </div>
+
+  <!-- Screen 5: Bias Audit (C) -->
+  <div class="screen" data-step="5">
+    <div class="card">
+      <div class="screen-label">Lens C · Step 5 of 9</div>
+      <div class="screen-title">Bias Audit</div>
+      <div class="screen-desc">Check which cognitive biases may be distorting your judgment. Check all that apply.</div>
+    </div>
+    <div class="card">
+      <div class="bias-grid">
+        <label class="bias-item"><input type="checkbox" data-key="biasFOMO"> <span><strong>FOMO</strong> — Fear of missing a unique opportunity</span></label>
+        <label class="bias-item"><input type="checkbox" data-key="biasSunk"> <span><strong>Sunk cost</strong> — Avoiding change due to past investment</span></label>
+        <label class="bias-item"><input type="checkbox" data-key="biasStatusQuo"> <span><strong>Status quo</strong> — Defaulting to "keep going" because it's comfortable</span></label>
+        <label class="bias-item"><input type="checkbox" data-key="biasConfirmation"> <span><strong>Confirmation</strong> — Looking for validation, not information</span></label>
+        <label class="bias-item"><input type="checkbox" data-key="biasOptimism"> <span><strong>Optimism</strong> — Best-case is wishful, not realistic</span></label>
+        <label class="bias-item"><input type="checkbox" data-key="biasAuthority"> <span><strong>Authority</strong> — Deferring because of title, not argument</span></label>
+        <label class="bias-item"><input type="checkbox" data-key="biasPlanning"> <span><strong>Planning fallacy</strong> — Underestimating time, cost, complications</span></label>
+        <label class="bias-item"><input type="checkbox" data-key="biasLoss"> <span><strong>Loss aversion</strong> — Overweighting losses vs. gains</span></label>
+      </div>
+      <label for="f-counter" style="margin-top: 1.2rem;">How will you counter the biases you checked?</label>
+      <textarea id="f-counter" placeholder="Concrete actions: who to ask, what data to gather, what assumption to test…" data-key="biasCounter">{{BIAS_COUNTER}}</textarea>
+    </div>
+  </div>
+
+  <!-- Screen 6: Timing (D) -->
+  <div class="screen" data-step="6">
+    <div class="card">
+      <div class="screen-label">Lens D · Step 6 of 9</div>
+      <div class="screen-title">Timing Test</div>
+      <div class="screen-desc">The right decision at the wrong time is still wrong. Is this a two-way door (reversible) or a one-way door (irreversible)?</div>
+    </div>
+    <div class="card">
+      <label>Door type</label>
+      <div class="door-options">
+        <label class="door-option">
+          <input type="radio" name="door" value="two" data-key="doorType">
+          <span><strong>Two-way door</strong> <span class="tag tag-green">Reversible</span><br><small>Move fast — optimize for learning</small></span>
+        </label>
+        <label class="door-option">
+          <input type="radio" name="door" value="one" data-key="doorType">
+          <span><strong>One-way door</strong> <span class="tag tag-red">Irreversible</span><br><small>Move slow — optimize for correctness</small></span>
+        </label>
+      </div>
+      <label for="f-whynow">Why decide now vs. in 30 days?</label>
+      <textarea id="f-whynow" placeholder="What changes if you wait? What information would you have?" data-key="whyNow">{{WHY_NOW}}</textarea>
+      <label for="f-info30">What would you know in 30 days that you don't today?</label>
+      <input type="text" id="f-info30" placeholder="Specific information or signal that would arrive…" data-key="info30" value="{{INFO_30_DAYS}}">
+    </div>
+  </div>
+
+  <!-- Screen 7: Opportunity Cost (E) -->
+  <div class="screen" data-step="7">
+    <div class="card">
+      <div class="screen-label">Lens E · Step 7 of 9</div>
+      <div class="screen-title">Opportunity Cost</div>
+      <div class="screen-desc">Every choice forecloses other choices. Make the true cost visible.</div>
+    </div>
+    <div class="card">
+      <label for="f-time">Time commitment</label>
+      <input type="text" id="f-time" placeholder="e.g. 10 hrs/week × 12 weeks = 120 hrs" data-key="timeCost" value="{{TIME_COST}}">
+      <label for="f-whatelse">What else could those hours produce?</label>
+      <textarea id="f-whatelse" placeholder="The next best use of the same time, money, or attention…" data-key="whatElse">{{WHAT_ELSE}}</textarea>
+      <label for="f-relationships">What relationships or opportunities might suffer?</label>
+      <input type="text" id="f-relationships" placeholder="Clients, partnerships, projects put on hold…" data-key="relationships" value="{{RELATIONSHIPS_AT_RISK}}">
+      <label for="f-truecost">True opportunity cost — in plain terms</label>
+      <textarea id="f-truecost" placeholder="Choosing this means NOT doing ___. That has a cost of ___." data-key="trueCost">{{TRUE_COST}}</textarea>
+    </div>
+  </div>
+
+  <!-- Screen 8: Pre-mortem (F) -->
+  <div class="screen" data-step="8">
+    <div class="card">
+      <div class="screen-label">Lens F · Step 8 of 9</div>
+      <div class="screen-title">Pre-mortem</div>
+      <div class="screen-desc">Travel 12 months into the future. The decision was made — and it failed spectacularly. What happened?</div>
+    </div>
+    <div class="card">
+      <label for="f-failure">Describe the failure scenario</label>
+      <textarea id="f-failure" class="tall" placeholder="It's 12 months from now. What went wrong? What sequence of events led here?" data-key="failureScenario">{{FAILURE_SCENARIO}}</textarea>
+      <label for="f-failprob">Is this scenario more likely than your gut says?</label>
+      <input type="text" id="f-failprob" placeholder="Honest probability estimate — e.g. 20%, 40%, more than I'd like to admit" data-key="failureProbability" value="{{FAILURE_PROBABILITY}}">
+    </div>
+  </div>
+
+  <!-- Screen 9: Scenarios + Regret (G + H) -->
+  <div class="screen" data-step="9">
+    <div class="card">
+      <div class="screen-label">Lens G + H · Step 9 of 9</div>
+      <div class="screen-title">Scenarios + Regret Test</div>
+      <div class="screen-desc">Map the probability-weighted range of outcomes, then apply the Bezos regret minimization test.</div>
+    </div>
+    <div class="card">
+      <label>Scenario matrix</label>
+      <table class="scenario-table">
+        <thead><tr><th>Scenario</th><th>Probability</th><th>Outcome</th></tr></thead>
+        <tbody>
+          <tr><td>Worst</td><td><input type="text" data-key="sWorstP" placeholder="10%"></td><td><input type="text" data-key="sWorstO" placeholder="What happens…"></td></tr>
+          <tr><td>Bad</td><td><input type="text" data-key="sBadP" placeholder="25%"></td><td><input type="text" data-key="sBadO" placeholder="What happens…"></td></tr>
+          <tr><td>Neutral</td><td><input type="text" data-key="sNeutralP" placeholder="30%"></td><td><input type="text" data-key="sNeutralO" placeholder="What happens…"></td></tr>
+          <tr><td>Good</td><td><input type="text" data-key="sGoodP" placeholder="25%"></td><td><input type="text" data-key="sGoodO" placeholder="What happens…"></td></tr>
+          <tr><td>Best</td><td><input type="text" data-key="sBestP" placeholder="10%"></td><td><input type="text" data-key="sBestO" placeholder="What happens…"></td></tr>
+        </tbody>
+      </table>
+      <label for="f-regretdo" style="margin-top:1.5rem;">At 80, would you regret <em>doing</em> this?</label>
+      <input type="text" id="f-regretdo" placeholder="Yes / No / Maybe — and why" data-key="regretDoing" value="{{REGRET_DOING}}">
+      <label for="f-regretnot">At 80, would you regret <em>not</em> doing this?</label>
+      <input type="text" id="f-regretnot" placeholder="Yes / No / Maybe — and why" data-key="regretNotDoing" value="{{REGRET_NOT_DOING}}">
+    </div>
+  </div>
+
+  <!-- Screen 10: Second-order Effects (I) -->
+  <div class="screen" data-step="10">
+    <div class="card">
+      <div class="screen-label">Lens I · Final Lens</div>
+      <div class="screen-title">Second-order Effects</div>
+      <div class="screen-desc">If this decision succeeds exactly as planned — what new problems does it create? What signals does it send?</div>
+    </div>
+    <div class="card">
+      <label for="f-newproblems">What new problems does success create?</label>
+      <textarea id="f-newproblems" placeholder="New demands on time, team, infrastructure, relationships…" data-key="newProblems">{{NEW_PROBLEMS}}</textarea>
+      <label for="f-signals">What does this signal to others?</label>
+      <textarea id="f-signals" placeholder="What does this communicate to your team, customers, or competitors?" data-key="signals">{{SIGNALS}}</textarea>
+      <label for="f-precedent">What precedent does it set?</label>
+      <input type="text" id="f-precedent" placeholder="What future decisions become harder or easier because of this one?" data-key="precedent" value="{{PRECEDENT}}">
+    </div>
+  </div>
+
+  <!-- Screen 11: Open Questions -->
+  <div class="screen" data-step="11">
+    <div class="card">
+      <div class="screen-label">Before you decide</div>
+      <div class="screen-title">Three Open Questions</div>
+      <div class="screen-desc">The hardest questions to sit with. Edge cases, unknown unknowns, gut-checks. These are not answered here — they are held.</div>
+    </div>
+    <div class="card">
+      <label for="f-q1">Question 1</label>
+      <textarea id="f-q1" data-key="q1">{{OPEN_QUESTION_1}}</textarea>
+      <label for="f-q2">Question 2</label>
+      <textarea id="f-q2" data-key="q2">{{OPEN_QUESTION_2}}</textarea>
+      <label for="f-q3">Question 3</label>
+      <textarea id="f-q3" data-key="q3">{{OPEN_QUESTION_3}}</textarea>
+    </div>
+  </div>
+
+  <!-- Screen 12: Summary -->
+  <div class="screen" data-step="12">
+    <div class="card">
+      <div class="screen-label">Analysis complete</div>
+      <div class="screen-title" id="summary-title">Decision Summary</div>
+      <div class="screen-desc">Your full analysis across all 9 lenses. Print or save this page before closing.</div>
+    </div>
+    <div class="card" id="summary-content">
+      <p style="color:#94a3b8; font-size:0.88rem;">Complete the framework screens to see your summary here.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav">
+  <div>
+    <button class="ghost" id="btn-prev" onclick="go(-1)" style="display:none">← Back</button>
+  </div>
+  <div>
+    <span class="saved-indicator" id="saved-indicator">Saved ✓</span>
+  </div>
+  <div style="display:flex; gap:0.75rem; align-items:center;">
+    <button class="ghost" onclick="resetAll()" style="font-size:0.78rem; color:#94a3b8;">Reset</button>
+    <button class="primary" id="btn-next" onclick="go(1)">Next →</button>
+  </div>
+</div>
+
+<script>
+  const TOTAL = 13;
+  const KEY = 'dtk-v1';
+  let step = 0;
+  let state = {};
+
+  try { const s = localStorage.getItem(KEY); if (s) state = JSON.parse(s); } catch(e) {}
+
+  function collect() {
+    document.querySelector('.screen.active').querySelectorAll('[data-key]').forEach(el => {
+      if (el.type === 'checkbox') state[el.dataset.key] = el.checked;
+      else if (el.type === 'radio') { if (el.checked) state[el.dataset.key] = el.value; }
+      else state[el.dataset.key] = el.value;
+    });
+  }
+
+  function restore(screen) {
+    screen.querySelectorAll('[data-key]').forEach(el => {
+      const v = state[el.dataset.key];
+      if (v === undefined) return;
+      if (el.type === 'checkbox') el.checked = !!v;
+      else if (el.type === 'radio') { if (el.value === v) el.checked = true; }
+      else el.value = v;
+    });
+  }
+
+  function save() {
+    collect();
+    try {
+      localStorage.setItem(KEY, JSON.stringify(state));
+      const el = document.getElementById('saved-indicator');
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 1500);
+    } catch(e) {}
+  }
+
+  function go(dir) {
+    save();
+    const screens = document.querySelectorAll('.screen');
+    screens[step].classList.remove('active');
+    step = Math.max(0, Math.min(TOTAL - 1, step + dir));
+    screens[step].classList.add('active');
+    restore(screens[step]);
+    updateUI();
+    if (step === TOTAL - 1) buildSummary();
+    window.scrollTo(0, 0);
+  }
+
+  function updateUI() {
+    const pct = ((step + 1) / TOTAL * 100).toFixed(1);
+    document.getElementById('progress-bar').style.width = pct + '%';
+    document.getElementById('step-counter').textContent = `Step ${step + 1} of ${TOTAL}`;
+    document.getElementById('btn-prev').style.display = step > 0 ? 'inline-flex' : 'none';
+    const nb = document.getElementById('btn-next');
+    if (step === TOTAL - 1) {
+      nb.textContent = '🖨️ Print / Save';
+      nb.onclick = () => window.print();
+    } else {
+      nb.textContent = 'Next →';
+      nb.onclick = () => go(1);
+    }
+    const d = (state.decision || '').trim();
+    if (d) document.getElementById('header-title').textContent = d.slice(0, 80) + (d.length > 80 ? '…' : '');
+  }
+
+  function buildSummary() {
+    const fields = [
+      ['decision', 'Decision'],
+      ['restate', 'Framed as'],
+      ['defaultPath', 'Default path'],
+      ['trigger', 'What forced this now'],
+      ['success6m', 'Success in 6 months'],
+      ['biggestRisk', 'Biggest risk to avoid'],
+      ['freshStart', 'Start-fresh test (Lens A)'],
+      ['staleAssumptions', 'Stale assumptions found'],
+      ['directlyAffected', 'Directly affected (Lens B)'],
+      ['buyinNeeded', 'Buy-in needed from'],
+      ['biasCounter', 'Bias counters (Lens C)'],
+      ['whyNow', 'Why decide now (Lens D)'],
+      ['trueCost', 'True opportunity cost (Lens E)'],
+      ['failureScenario', 'Pre-mortem scenario (Lens F)'],
+      ['newProblems', 'Second-order effects (Lens I)'],
+      ['signals', 'What this signals'],
+    ];
+
+    const biasLabels = { biasFOMO:'FOMO', biasSunk:'Sunk cost', biasStatusQuo:'Status quo', biasConfirmation:'Confirmation', biasOptimism:'Optimism bias', biasAuthority:'Authority bias', biasPlanning:'Planning fallacy', biasLoss:'Loss aversion' };
+    const activeBiases = Object.entries(biasLabels).filter(([k]) => state[k]).map(([,v]) => v);
+
+    const doorLabel = state.doorType === 'two' ? '✅ Two-way door (reversible)' : state.doorType === 'one' ? '⚠️ One-way door (irreversible)' : '';
+
+    let html = '';
+    fields.forEach(([k, label]) => {
+      const v = (state[k] || '').trim();
+      if (v) html += `<div class="summary-section"><h3>${label}</h3><p>${v}</p></div>`;
+    });
+
+    if (activeBiases.length) html += `<div class="summary-section"><h3>Biases flagged (Lens C)</h3><p>${activeBiases.join(', ')}</p></div>`;
+    if (doorLabel) html += `<div class="summary-section"><h3>Door type (Lens D)</h3><p>${doorLabel}</p></div>`;
+
+    const rd = (state.regretDoing || '').trim();
+    const rn = (state.regretNotDoing || '').trim();
+    if (rd || rn) html += `<div class="summary-section"><h3>Regret test (Lens H)</h3><p>Doing it: ${rd || '—'}<br>Not doing it: ${rn || '—'}</p></div>`;
+
+    const qs = ['q1','q2','q3'].map(k => (state[k]||'').trim()).filter(Boolean);
+    if (qs.length) html += `<div class="open-questions-box"><h3>Open questions to sit with before deciding</h3><ol>${qs.map(q=>`<li>${q}</li>`).join('')}</ol></div>`;
+
+    document.getElementById('summary-content').innerHTML = html || '<p style="color:#94a3b8;font-size:.88rem">Complete the framework screens to see your summary.</p>';
+    const d = (state.decision || '').trim();
+    if (d) document.getElementById('summary-title').textContent = d.slice(0, 60) + (d.length > 60 ? '…' : '');
+  }
+
+  function resetAll() {
+    if (!confirm('Reset all answers and start over?')) return;
+    state = {};
+    localStorage.removeItem(KEY);
+    document.querySelectorAll('[data-key]').forEach(el => {
+      if (el.type === 'checkbox' || el.type === 'radio') el.checked = false;
+      else el.value = '';
+    });
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    step = 0;
+    document.querySelectorAll('.screen')[0].classList.add('active');
+    updateUI();
+  }
+
+  // Auto-save
+  let saveTimer;
+  document.addEventListener('input', () => { clearTimeout(saveTimer); saveTimer = setTimeout(save, 700); });
+  document.addEventListener('change', save);
+
+  // Keyboard navigation
+  document.addEventListener('keydown', e => {
+    if (['TEXTAREA','INPUT','SELECT'].includes(e.target.tagName)) return;
+    if (e.key === 'ArrowRight') go(1);
+    if (e.key === 'ArrowLeft') go(-1);
+  });
+
+  restore(document.querySelector('.screen.active'));
+  updateUI();
+</script>
+</body>
+</html>
