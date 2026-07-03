@@ -14,6 +14,24 @@ SKILLS = [
     "frontend-slides",
     "mcp-builder",
     "fact-checker",
+    # Marketing Specialist pack
+    "market-quick",
+    "market-audit",
+    "market-copy",
+    "market-seo",
+    "market-competitors",
+    "market-brand",
+    "market-emails",
+    "market-social",
+    "market-ads",
+    "market-funnel",
+    "market-landing",
+    "market-launch",
+    "market-offer",
+    "market-proposal",
+    "market-report",
+    "market-report-pdf",
+    "market-report-docx",
 ]
 
 EXCLUDE_NAMES = {".DS_Store", "Thumbs.db", "desktop.ini"}
