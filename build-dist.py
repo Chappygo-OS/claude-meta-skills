@@ -14,9 +14,9 @@ SKILLS = [
     "frontend-slides",
     "mcp-builder",
     "fact-checker",
-    # Marketing Specialist pack
+    # Marketing Specialist pack (free tier only — premium skills are
+    # distributed via educasium.com, not this public repo)
     "market-quick",
-    "market-audit",
     "market-copy",
     "market-seo",
     "market-competitors",
@@ -28,10 +28,6 @@ SKILLS = [
     "market-landing",
     "market-launch",
     "market-offer",
-    "market-proposal",
-    "market-report",
-    "market-report-pdf",
-    "market-report-docx",
 ]
 
 EXCLUDE_NAMES = {".DS_Store", "Thumbs.db", "desktop.ini"}
